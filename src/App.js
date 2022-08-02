@@ -1,195 +1,227 @@
-import { useState,useEffect,useRef } from 'react';
-import CardDeck from './CardDeck';
+import { useState, useEffect, useRef } from 'react';
+import api from './api';
+import CardDeck from './components/CardDeck';
 import './style.css';
 
 function App() {
-  let cardArr = [
-    "javascript",
-    "react",
-    "html5",
-    "babel",
-    "redux",
-    "python",
-    "angular",
-    "ruby",
-    "sass",
-    "cplusplus",
-    "css3",
-    "django",
-    "node",
-    "java",
-    "ts",
-  ];
-  const [score, setScore] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [deckAmt, setDeckAmt] = useState([]);
-  const [finalDeck, setfinalDeck] = useState([]);
-  const [cards, setCards] = useState([...finalDeck]);
-  const [picked, setPicked] = useState([]);
-  let dup = [...cards];
+    const [orgCards, setOrgCards] = useState([]); //original starting card deck from server
+    const [shuffled, setShuffled] = useState([]); //shuffled deck
+    const [finalDeck, setfinalDeck] = useState([]); //shuffled and counted cards
+    const [picked, setPicked] = useState([]); //holds picked cards
+    const [dup, setDup] = useState([]); //duplicate finalDeck to easier match comparison
 
-  const tick = useRef(null);
-  useEffect(() => {
-    if (running) {
-      tick.current = setInterval(() => {
-        setTimer((timer) => timer + 1);
-      }, 1000);
-    }
-    return () => clearInterval(tick.current); //clear on unmount
-  });
+    const [score, setScore] = useState(0);
+    const [running, setRunning] = useState(false);
+    const [timer, setTimer] = useState(0);
+    const [matches, setMatches] = useState(0);
+    const [count, setCount] = useState()
+    const [display, setDisplay] = useState('')
+    const tick = useRef(null);
+    useEffect(() => {
+        startUp();
+    }, []);
 
-  //////////game difficulty
-  const cardCount = (e) => {
-    let count = e.target.value;
-    //if difficulty is changed mid-game, stop and reset the timer
-    setRunning(false);
-    clearInterval(tick.current);
-    setTimer(0);
-    //need to set finalDeck to an empty array, or the new cards will just be added to the deck already onscreen
-    setfinalDeck([]);
-    let shuffled = [...cardArr].sort(() => Math.random() - 0.5); //shuffle original array, slice out count
-    var selected = shuffled.slice(0, count);
-    setDeckAmt(selected);
-  };
+    const startUp = async () => {
+        await api.getall().then((cards) => {
+            let namedcards = [];
+            cards.map((card) => {
+                namedcards.push({
+                    name: card.data.name,
+                });
+                return namedcards;
+            });
+            setOrgCards(namedcards);
+        });
+    };
 
-  //////////reset button
-  //reset the game by setting cards and finalDeck to an empty array, stop and reset timer
-  const reset = () => {
-    setCards([]);
-    setfinalDeck([]);
-    setRunning(false);
-    setTimer(0);
-  };
-
-  //////////start button
-  //start timer, double the deck then shuffle it
-  const start = () => {
-    setRunning(true);
-    let doubled = deckAmt.concat(deckAmt);
-    let shuffle = [...doubled].sort(() => Math.random() - 0.5);
-    shuffle.map((name, index) => {
-      finalDeck.push({
-        name,
-        flip: false,
-        match: false,
-      });
-      return finalDeck;
+    useEffect(() => {
+        if (running) {
+            tick.current = setInterval(() => {
+                setTimer((timer) => timer + 1);
+            }, 1000);
+        }
+        return () => clearInterval(tick.current); //clear on unmount
     });
-    setfinalDeck(finalDeck);
-    setCards(finalDeck);
-  };
 
-  //////////check for match
-  //check for a match, if they match, set it to true so the cards are disabled.  if not a match, set flip to false so they turn back over and incriment the score
-  const check = () => {
-    let scored = [score];
-    let match = picked[0].name === picked[1].name;
+    const cardCount = (e) => {
+        let count = e.target.value
+        let temp = [];
+        let counted;
+        setCount(count);
+        //if difficulty is changed mid-game, reset all
+        reset()
+        clearInterval(tick.current);
 
-    if (match) {
-      setCards(dup);
-      setPicked([]);
-    } else {
-      dup[picked[0].index].flip = false;
-      dup[picked[0].index].match = false;
-      dup[picked[1].index].flip = false;
-      dup[picked[1].index].match = false;
-      setScore((scored) => scored + 1);
-      setCards(dup);
-      setPicked([]);
-    }
-  };
+        temp = [...orgCards].sort(() => Math.random() - 0.5); //shuffle original array
+        counted = temp.slice(0, count); //get correct amount of cards
+        setShuffled(counted);
+    };
 
-  //////////card clicked
-  //when a card is clicked, if the picked array length is two, check cards.  if not, flip card, push card to picked array, recheck picked array length.
-  const clicked = (e, name, index) => {
-    if (picked.length === 2) {
-      setTimeout(() => {
-        check();
-      }, 750);
-    }
+    const reset = () => {
+        setScore(0);
+        setTimer(0);
+        setDisplay()
+        setMatches(0);
+        setShuffled([]);
+        setfinalDeck([]);
+        setRunning(false);
+    };
 
-    dup[index].flip = true;
-    dup[index].match = true;
-    setCards(dup);
-    picked.push({ name, index });
-    setPicked(picked);
-    if (picked.length === 2) {
-      setTimeout(() => {
-        check();
-      }, 750);
-    }
-  };
+    const start = () => {
+        setRunning(true);
+        let deck = [];
+        //double the deck then shuffle the cards
+        let doubled = shuffled.concat(shuffled);
+        doubled.sort(() => Math.random() - 0.5);
 
-  return (
-    <div className='wrapper'>
-      <div className='heading'>
-        <h1>Memory Game</h1>
-        <h2>Select your difficulty, then press start</h2>
-      </div>
-      <div className='top'>
-        <button className='option' value='5' onClick={cardCount}>
-          Easy
-        </button>
-        <button className='option' value='10' onClick={cardCount}>
-          Medium
-        </button>
-        <button className='option' value='15' onClick={cardCount}>
-          Difficult
-        </button>
-      </div>
-      <div>
-        <button className='option' onClick={start}>
-          Start
-        </button>
-        <button className='option' onClick={reset}>
-          Reset
-        </button>
-      </div>
-      <div className='bottom'>
-        <div className='display'>
-          {timer}
-          {timer === 1 ? ' second' : ' seconds'}
+        doubled.map((card, i) => {
+            deck.push({
+                name: card.name,
+                index: i,
+                flipped: false,
+                match: false,
+            });
+            return deck;
+        });
+        setfinalDeck(deck);
+        setDup(deck);
+    };
+
+    const gameOver = () => {
+        if (matches === count-1) {
+            setRunning(false);
+            setDisplay('You won!')
+        }
+    };
+
+    const check = () => {
+        let match = picked[0].name === picked[1].name;
+
+        if (match) {
+            setfinalDeck(dup);
+            setPicked([]);
+            console.log(matches,' match count')
+            setMatches((matches) => matches + 1);
+            gameOver();
+        } else {
+            dup[picked[0].index].flipped = false;
+            dup[picked[0].index].match = false;
+            dup[picked[1].index].flipped = false;
+            dup[picked[1].index].match = false;
+            setScore((score) => score + 1);
+            setfinalDeck(dup);
+            setPicked([]);
+        }
+    };
+
+    const clicked = (card) => {
+        let index = card.index;
+        let name = card.name;
+
+        if (picked.length === 2) {
+            setTimeout(() => {
+                check();
+            }, 750);
+        }
+        //optimistically set flipped and match to true
+        dup[index].flipped = true;
+        dup[index].match = true;
+        setDup(dup);
+
+        picked.push({ name, index });
+        setPicked(picked);
+
+        if (picked.length === 2) {
+            setTimeout(() => {
+                check();
+            }, 750);
+        }
+    };
+    return (
+        <div className='wrapper'>
+            <div className='heading'>
+                <h1>Memory Game</h1>
+                <h2>Select your difficulty, then press start</h2>
+            </div>
+            <div className='top'>
+                <button className='option' value={5} onClick={cardCount}>
+                    Easy
+                </button>
+                <button className='option' value={10} onClick={cardCount}>
+                    Medium
+                </button>
+                <button className='option' value={15} onClick={cardCount}>
+                    Difficult
+                </button>
+            </div>
+            <div>
+                <button className='option' onClick={start}>
+                    Start
+                </button>
+                <button className='option' onClick={reset}>
+                    Reset
+                </button>
+            </div>
+            <div className='bottom'>
+                <div className='display'>
+                    {timer}
+                    {timer === 1 ? ' second' : ' seconds'}
+                </div>
+                <div className='display'>
+                    {score}
+                    {score === 1 ? ' incorrect guess' : ' incorrect guesses'}
+                </div>
+            </div>
+            <div className='display msg'>{display}</div>
+            <div className='cardHolder'>
+                {finalDeck.map((card, i) => (
+                    <div key={i}>
+                        <CardDeck
+                            index={i}
+                            card={card}
+                            flipped={card.flipped}
+                            match={card.match}
+                            value={card.name}
+                            clicked={clicked}
+                        ></CardDeck>
+                    </div>
+                ))}
+            </div>
+            <div className='credit'>
+                <p>
+                    Created by
+                    {' '}
+                    <a
+                        href='https://achulslander.com/'
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        AC Hulslander
+                    </a>
+                </p>
+                <p>
+                    <a
+                        href='https://codepen.io/alleycaaat/pens/public'
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        See my other pens
+                    </a>
+                </p>
+                <p className='smol'>
+                    All isons are from
+                    {' '}
+                    <a
+                        target='_blank'
+                        href='https://icons8.com'
+                        rel='noreferrer'
+                    >
+                        Icons8
+                    </a>
+                </p>
+            </div>
         </div>
-        <div className='display'>
-          {score}
-          {score === 1 ? ' incorrent guess' : ' incorrect guesses'}
-        </div>
-      </div>
-      <div className='cardHolder'>
-        {cards.map((card, index) => (
-          <CardDeck
-            value={card.name}
-            index={index}
-            flipped={card.flip}
-            match={card.match}
-            click={(e) => {
-              clicked(card, card.name, index);
-            }}
-          ></CardDeck>
-        ))}
-      </div>
-      <div className='credit'>
-        <p>
-          Created by
-          <a href='https://achulslander.com/' target='_blank' rel='noreferrer'>
-            AC Hulslander
-          </a>
-        </p>
-        <p>
-          <a href='https://codepen.io/alleycaaat/pens/public' target='_blank' rel='noreferrer'>
-            See my other pens
-          </a>
-        </p>
-        <p class='smol'>
-          All isons are from
-          <a target='_blank' href='https://icons8.com' rel='noreferrer'>
-            Icons8
-          </a>
-        </p>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default App;
