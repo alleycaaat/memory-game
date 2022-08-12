@@ -12,35 +12,44 @@ $purple: #732091;
 }
 body {
     background-color: lightGrey;
-    height: 100%;
 }
 .wrapper {
-    width: 100%;
-    height: 100%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 90%;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
     .heading {
-        margin-top: 50px;
+        margin-top: 30px;
         text-align: center;
         color: $purple;
-        h1 {
-            font-size: 50px;
-        }
+    }
+    h1 {
+        font-size: 20px;
+    }
+    h2 {
+        text-align: center;
+        font-size: 17px;
+        width: 85%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
+//gameboard
 .cardHolder {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    height: 70%;
-    width: 630px;
+    width: 270px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+//cards
 button {
     transition: 0.6s;
     &:disabled {
@@ -51,10 +60,10 @@ button {
 button {
     background-color: $purple;
     color: #fff;
-    width: 100px;
+    width: 45px;
     border-radius: 5px;
-    margin: 5px;
-    height: 100px;
+    margin: 2px;
+    height: 45px;
     box-shadow: $boxshadow;
     transition: 0.3s;
     transform-style: preserve-3d;
@@ -63,7 +72,9 @@ button {
         vertical-align: middle;
         backface-visibility: hidden;
         //https://www.w3schools.com/cssref/css3_pr_backface-visibility.asp
-        height: 96px;
+        width: 43px;
+        height: 43px;
+        padding: 5px;
     }
 }
 .card {
@@ -75,47 +86,59 @@ button {
 .animate {
     transform: rotateY(180deg);
 }
+
+//button wrappers
 .top {
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
 }
 .bottom {
     margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
+
+//message container
 .display {
     text-align: center;
     padding: 4px 0;
     font-size: 19px;
     color: $purple;
     height: 35px;
-    width: 205px;
+    width: 185px;
     margin: 5px 7px;
     border: 3px solid $purple;
     border-radius: 5px;
     &.msg {
         border: none;
-        height: 41px;
-        margin-top: 2px;
-        margin-bottom: 7px;
-        font-size: 27px;
+        width: 85%;
+        height: 23px;
+        margin-top: 3px;
+        margin-bottom: 5px;
+        font-size: 19px;
     }
 }
+//difficulty button
 .option {
     padding: 3px;
     font-size: 21px;
     border-radius: 5px;
     color: purple;
     height: auto;
+    width: auto;
     background-color: #fff;
-    margin: 5px 7px;
+    margin: 3px 7px;
     cursor: pointer;
     &:hover {
         background-color: $purple;
         color: #fff;
     }
 }
+
+//credit box
 .credit {
     margin: 15px;
     padding: 15px;
@@ -134,5 +157,102 @@ button {
     }
     .smol {
         font-size: 13px;
+    }
+}
+
+//make things responsive for larger screens
+@media screen and (min-width: 330px) {
+    .display {
+        font-size: 19px;
+    }
+    .top {
+        display: flex;
+        flex-direction: row;
+    }
+}
+@media screen and (min-width: 350px) {
+    .cardHolder {
+        width: 330px;
+    }
+    .option {
+        padding: 3px 7px;
+        font-size: 19px;
+    }
+    .card,
+    button {
+        width: 50px;
+        height: 50px;
+        margin: 5px;
+        .back {
+            width: 49px;
+            height: 49px;
+        }
+    }
+    .wrapper {
+        h1 {
+            font-size: 35px;
+        }
+        h2 {
+            font-size: 23px;
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .bottom {
+        flex-direction: row;
+    }
+    .cardHolder {
+        width: 430px;
+    }
+    .display {
+        width: 205px;
+    }
+    .card,
+    button {
+        width: 75px;
+        height: 75px;
+        margin: 5px;
+        .back {
+            width: 73px;
+            height: 73px;
+        }
+    }
+}
+@media screen and (min-width: 550px) {
+    .cardHolder {
+        width: 505px;
+    }
+    .card,
+    button {
+        width: 90px;
+        height: 90px;
+        margin: 5px;
+        .back {
+            width: 86px;
+            height: 86px;
+        }
+    }
+    .wrapper {
+        h1 {
+            font-size: 37px;
+        }
+    }
+}
+
+@media screen and (min-width: 660px) {
+    .cardHolder,
+    .rules {
+        width: 640px;
+    }
+    .card,
+    button {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        .back {
+            width: 96px;
+            height: 96px;
+        }
     }
 }

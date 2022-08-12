@@ -25,3 +25,7 @@ yarn-error.log*
 .env
 apitest.http
 functions/add.js
+# Local Netlify folder
+.netlify
+style.scss
+style.css.map

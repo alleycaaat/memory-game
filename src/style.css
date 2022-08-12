@@ -9,14 +9,11 @@
 
 body {
   background-color: lightGrey;
-  height: 100%;
 }
 
 .wrapper {
-  width: 100%;
-  height: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 90%;
+  height: auto;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -30,17 +27,26 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .wrapper .heading {
-  margin-top: 50px;
+  margin-top: 30px;
   text-align: center;
   color: #732091;
 }
 
-.wrapper .heading h1 {
-  font-size: 50px;
+.wrapper h1 {
+  font-size: 20px;
+}
+
+.wrapper h2 {
+  text-align: center;
+  font-size: 17px;
+  width: 85%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cardHolder {
@@ -52,8 +58,9 @@ body {
           justify-content: center;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  height: 70%;
-  width: 630px;
+  width: 270px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 button {
@@ -69,10 +76,10 @@ button:disabled {
 button {
   background-color: #732091;
   color: #fff;
-  width: 100px;
+  width: 45px;
   border-radius: 5px;
-  margin: 5px;
-  height: 100px;
+  margin: 2px;
+  height: 45px;
   -webkit-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
           box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-transition: 0.3s;
@@ -88,7 +95,9 @@ button .back {
   vertical-align: middle;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
-  height: 96px;
+  width: 43px;
+  height: 43px;
+  padding: 5px;
 }
 
 .card {
@@ -107,6 +116,13 @@ button .back {
 
 .top {
   margin-top: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 .bottom {
@@ -120,6 +136,10 @@ button .back {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 .display {
@@ -128,7 +148,7 @@ button .back {
   font-size: 19px;
   color: #732091;
   height: 35px;
-  width: 205px;
+  width: 185px;
   margin: 5px 7px;
   border: 3px solid #732091;
   border-radius: 5px;
@@ -136,10 +156,11 @@ button .back {
 
 .display.msg {
   border: none;
-  height: 41px;
-  margin-top: 2px;
-  margin-bottom: 7px;
-  font-size: 27px;
+  width: 85%;
+  height: 23px;
+  margin-top: 3px;
+  margin-bottom: 5px;
+  font-size: 19px;
 }
 
 .option {
@@ -148,8 +169,9 @@ button .back {
   border-radius: 5px;
   color: purple;
   height: auto;
+  width: auto;
   background-color: #fff;
-  margin: 5px 7px;
+  margin: 3px 7px;
   cursor: pointer;
 }
 
@@ -180,5 +202,111 @@ button .back {
 
 .credit .smol {
   font-size: 13px;
+}
+
+@media screen and (min-width: 330px) {
+  .display {
+    font-size: 19px;
+  }
+  .top {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
+}
+
+@media screen and (min-width: 350px) {
+  .cardHolder {
+    width: 330px;
+  }
+  .option {
+    padding: 3px 7px;
+    font-size: 19px;
+  }
+  .card,
+  button {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+  }
+  .card .back,
+  button .back {
+    width: 49px;
+    height: 49px;
+  }
+  .wrapper h1 {
+    font-size: 35px;
+  }
+  .wrapper h2 {
+    font-size: 23px;
+  }
+}
+
+@media screen and (min-width: 450px) {
+  .bottom {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
+  .cardHolder {
+    width: 430px;
+  }
+  .display {
+    width: 205px;
+  }
+  .card,
+  button {
+    width: 75px;
+    height: 75px;
+    margin: 5px;
+  }
+  .card .back,
+  button .back {
+    width: 73px;
+    height: 73px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .cardHolder {
+    width: 505px;
+  }
+  .card,
+  button {
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+  }
+  .card .back,
+  button .back {
+    width: 86px;
+    height: 86px;
+  }
+  .wrapper h1 {
+    font-size: 37px;
+  }
+}
+
+@media screen and (min-width: 660px) {
+  .cardHolder,
+  .rules {
+    width: 640px;
+  }
+  .card,
+  button {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+  }
+  .card .back,
+  button .back {
+    width: 96px;
+    height: 96px;
+  }
 }
 /*# sourceMappingURL=style.css.map */

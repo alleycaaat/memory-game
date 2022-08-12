@@ -3,14 +3,14 @@ const q = faunadb.query;
 
 exports.handler = (event, context) => {
     const client = new faunadb.Client({
-        secret: 'READ_ONLY',
+        secret: process.env.FAUNADB_SECRET,
         domain: 'db.us.fauna.com',
         port: 443,
         scheme: 'https',
     });
-
+console.log('get all')
     return client
-        .query(q.Paginate(q.Match(q.Ref('indexes/all_coding'))))
+        .query(q.Paginate(q.Match(q.Ref('indexes/all_codes'))))
         .then((response) => {
             const dataRefs = response.data;
 

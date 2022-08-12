@@ -14,26 +14,35 @@ function App() {
     const [running, setRunning] = useState(false);
     const [timer, setTimer] = useState(0);
     const [matches, setMatches] = useState(0);
-    const [count, setCount] = useState()
-    const [display, setDisplay] = useState('')
+    const [count, setCount] = useState(0);
+    const [display, setDisplay] = useState('');
     const tick = useRef(null);
+
+    //start things up on render
     useEffect(() => {
         startUp();
     }, []);
 
+    //gets the cards from fauna
     const startUp = async () => {
-        await api.getall().then((cards) => {
-            let namedcards = [];
-            cards.map((card) => {
-                namedcards.push({
-                    name: card.data.name,
+        await api
+            .getall()
+            .then((cards) => {
+                let namedcards = [];
+                cards.map((card) => {
+                    namedcards.push({
+                        name: card.data.name,
+                    });
+                    return namedcards;
                 });
-                return namedcards;
+                setOrgCards(namedcards);
+            })
+            .catch((err) => {
+                console.log('error ', err);
             });
-            setOrgCards(namedcards);
-        });
     };
 
+    //handles timer
     useEffect(() => {
         if (running) {
             tick.current = setInterval(() => {
@@ -43,31 +52,40 @@ function App() {
         return () => clearInterval(tick.current); //clear on unmount
     });
 
+    //handles difficulty seelection
     const cardCount = (e) => {
-        let count = e.target.value
+        //if difficulty is changed mid-game, reset game
+        reset();
+        clearInterval(tick.current);
+        //if error message present, remove
+        setDisplay('');
+        let count = e.target.value;
         let temp = [];
         let counted;
         setCount(count);
-        //if difficulty is changed mid-game, reset all
-        reset()
-        clearInterval(tick.current);
 
-        temp = [...orgCards].sort(() => Math.random() - 0.5); //shuffle original array
+        temp = [...orgCards].sort(() => Math.random() - 0.5); //shuffle all cards of original array
         counted = temp.slice(0, count); //get correct amount of cards
         setShuffled(counted);
     };
 
+    //reset errything
     const reset = () => {
         setScore(0);
         setTimer(0);
-        setDisplay()
+        setCount(0)
+        setDisplay();
         setMatches(0);
         setShuffled([]);
         setfinalDeck([]);
         setRunning(false);
     };
 
+    //start timer, double card amount, deal
     const start = () => {
+        if(count === 0) {
+           return setDisplay('Please select a difficulty')
+        }
         setRunning(true);
         let deck = [];
         //double the deck then shuffle the cards
@@ -87,33 +105,38 @@ function App() {
         setDup(deck);
     };
 
+    //handles game being won/over
     const gameOver = () => {
-        if (matches === count-1) {
+        if (matches === count - 1) {
             setRunning(false);
-            setDisplay('You won!')
+            setDisplay('You won!');
         }
     };
 
+    //check if the cards match
     const check = () => {
         let match = picked[0].name === picked[1].name;
 
         if (match) {
             setfinalDeck(dup);
             setPicked([]);
-            console.log(matches,' match count')
             setMatches((matches) => matches + 1);
             gameOver();
         } else {
-            dup[picked[0].index].flipped = false;
-            dup[picked[0].index].match = false;
-            dup[picked[1].index].flipped = false;
-            dup[picked[1].index].match = false;
+            setTimeout(() => {
+                dup[picked[0].index].flipped = false;
+                dup[picked[1].index].flipped = false;
+                dup[picked[0].index].match = false;
+                dup[picked[1].index].match = false;
+            }, 650);
+
             setScore((score) => score + 1);
             setfinalDeck(dup);
             setPicked([]);
         }
     };
 
+    //handles card selections
     const clicked = (card) => {
         let index = card.index;
         let name = card.name;
@@ -137,6 +160,7 @@ function App() {
             }, 750);
         }
     };
+
     return (
         <div className='wrapper'>
             <div className='heading'>
@@ -189,8 +213,7 @@ function App() {
             </div>
             <div className='credit'>
                 <p>
-                    Created by
-                    {' '}
+                    Created by{' '}
                     <a
                         href='https://achulslander.com/'
                         target='_blank'
@@ -201,16 +224,24 @@ function App() {
                 </p>
                 <p>
                     <a
+                        href='https://github.com/alleycaaat/memory-game'
+                        target='_blank'
+                        rel='noreferrer noopener'
+                    >
+                        View this project on GitHub
+                    </a>
+                </p>
+                <p>
+                    <a
                         href='https://codepen.io/alleycaaat/pens/public'
                         target='_blank'
                         rel='noreferrer'
                     >
-                        See my other pens
+                        See my pens
                     </a>
                 </p>
                 <p className='smol'>
-                    All isons are from
-                    {' '}
+                    All icons are from{' '}
                     <a
                         target='_blank'
                         href='https://icons8.com'
